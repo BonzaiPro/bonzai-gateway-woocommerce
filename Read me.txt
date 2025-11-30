@@ -1,52 +1,132 @@
-Bonzai Payment Gateway for WooCommerce
-📦 Installation Guide
+=== Bonzai Payment Gateway ===
+Contributors: bonzai
+Tags: payment, checkout, bonzai, woocommerce, gateway, digital-products
+Requires at least: 5.0
+Tested up to: 6.5
+Requires PHP: 7.4
+Stable tag: 1.3.1
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Thank you for downloading Bonzai Payment Gateway for WooCommerce.
-Follow the steps below to install it manually on your WordPress website.
+A WooCommerce payment gateway integrating Bonzai Checkout with webhook automation, a global product UUID, secure API communication, and automatic digital access delivery.
 
-🔧 Step-by-Step Installation
+== Description ==
 
-Unzip this package (the main .zip you downloaded from GitHub).
+Bonzai Payment Gateway enables WooCommerce stores to accept payments through Bonzai Premium.  
+This plugin is specifically designed for digital product creators who want a smooth and secure checkout experience with instant access delivery.
 
-Inside, you’ll find:
+Main features:
+* Global Bonzai Product UUID for all WooCommerce products
+* Automatic redirect to Bonzai Checkout
+* Full webhook support (payment confirmed / revoked)
+* Automatic WooCommerce order status updates
+* Dynamic checkout title using the actual WooCommerce product name
+* Secure token validation for incoming webhooks
+* Debug logs for developers
+* Compatible with all WooCommerce themes and builders
 
-A folder named something like bonzai-gateway/
+This plugin requires an active Bonzai Premium subscription.
 
-A second file named bonzai-gateway.zip
+== Installation ==
 
-Upload that inner .zip file (bonzai-gateway.zip) directly in your WordPress dashboard:
+1. Upload the plugin files to `/wp-content/plugins/bonzai-gateway/`
+2. Activate the plugin through the **Plugins** screen in WordPress
+3. Navigate to **WooCommerce → Settings → Payments → Bonzai**
+4. Enter your API Token and Product UUID
+5. Configure your webhook inside the Bonzai dashboard
 
-Go to Plugins → Add New → Upload Plugin
+== Configuration ==
 
-Select the file bonzai-gateway.zip
+=== API Token ===
+Your Bonzai API token found in your Bonzai Premium Dashboard.
 
-Click Install Now
+=== Bonzai Product UUID ===
+The Bonzai product UUID that will be delivered to all WooCommerce buyers.
 
-Then click Activate Plugin
+=== Redirect URL ===
+After payment, customers will be redirected to this thank-you page.
 
-Done! 🎉
-You can now configure it in:
+=== Currency ===
+Choose whether to:
+- use WooCommerce currency, or
+- force EUR or USD (supported by Bonzai)
 
-WooCommerce → Settings → Payments → Bonzai
+=== Minimum Amount ===
+Define a minimum cart total required to display the Bonzai payment option.
 
-⚙️ Requirements
+=== Debug Logs ===
+Enable debug mode to view logs in:
+WooCommerce → Status → Logs → bonzai-gateway
 
-WordPress 6.0+
+=== Webhook Token ===
+Security token used to validate webhook calls.
 
-WooCommerce 8.0+
+=== Webhook URL ===
+Add this URL to your Bonzai Premium webhook settings:
+https://yourwebsite.com/wp-json/bonzai/v1/webhook?token=YOUR_TOKEN
 
-PHP 7.4 or higher
+== Webhook Events ==
 
-🧠 Notes
+The plugin handles the following Bonzai events:
 
-Do not upload the main GitHub package — only the inner plugin .zip file.
+=== product_access_granted ===
+- Marks the WooCommerce order as **completed**
+- Confirms that the customer has been granted access
 
-Keep the README.md for installation instructions only.
+=== product_access_revoked ===
+- Marks the WooCommerce order as **refunded**
+- Access to the product is revoked on Bonzai’s side
 
-You can delete extra files after installation if you wish.
+== Payment Flow ==
 
-🧩 Support
+1. Customer places an order on WooCommerce  
+2. Order is created and set to “Pending payment”  
+3. Customer is redirected to Bonzai Checkout  
+4. Customer pays using card or crypto  
+5. Bonzai sends webhook → WooCommerce updates order automatically  
+6. Customer returns to your site on the thank-you page  
 
-For issues or improvements, open an Issue on GitHub.
-Author: Ramy
-Version: 1.3.0
+== Dynamic Checkout Title ==
+
+The plugin automatically generates a clean title sent to Bonzai Checkout:
+
+- For a single product: uses the product name  
+- For multiple products: “Product A (+X more items)”  
+- If unavailable: falls back to “WooCommerce Order #123”  
+
+== Requirements ==
+
+* WordPress 5.0+
+* WooCommerce 5.0+
+* PHP 7.4+
+* Active Bonzai Premium Subscription
+* Valid Bonzai API Token
+* Valid Bonzai Product UUID
+
+== Frequently Asked Questions ==
+
+= Can I use a different Bonzai UUID per product? =
+No. This version uses one global Bonzai product UUID for simplicity.
+
+= Does Bonzai support subscriptions? =
+Currently only one-off payments are supported.
+
+= Do I need a webhook? =
+Yes. Webhooks are required for automatic order completion.
+
+== Support ==
+
+For help or questions regarding Bonzai or this payment gateway, please contact:
+
+📩 support@bonzai.pro
+
+== Changelog ==
+
+= 1.3.1 =
+* Added English admin UI
+* Global Product UUID implementation
+* Improved webhook validation
+* Dynamic product-based checkout title
+* Enhanced error handling
+* Updated debug system
+
