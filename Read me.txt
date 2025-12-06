@@ -1,98 +1,160 @@
 === Bonzai Payment Gateway ===
 Contributors: bonzai
-Tags: payment, checkout, bonzai, woocommerce, gateway, digital-products
+Tags: payment, checkout, bonzai, woocommerce, gateway, digital-products, subscriptions, webhook
 Requires at least: 5.0
-Tested up to: 6.5
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.3.1
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A WooCommerce payment gateway integrating Bonzai Checkout with webhook automation, a global product UUID, secure API communication, and automatic digital access delivery.
+A complete WooCommerce payment gateway for Bonzai Checkout with subscriptions, VAT handling, webhook automation, and automatic order synchronization.
 
 == Description ==
 
-Bonzai Payment Gateway enables WooCommerce stores to accept payments through Bonzai Premium.  
-This plugin is specifically designed for digital product creators who want a smooth and secure checkout experience with instant access delivery.
+Bonzai Payment Gateway allows WooCommerce stores to accept payments through **Bonzai Premium Checkout** — supporting card and crypto payments, recurring subscriptions, and instant access delivery.
 
-Main features:
-* Global Bonzai Product UUID for all WooCommerce products
+Designed for digital product creators, course sellers, educators, and membership site owners.
+
+**Main features:**
+
+* Global Bonzai Product UUID
+* Per-product VAT handling (incl./excl.)
+* Per-product payment mode (one-off, monthly subscription, yearly subscription)
+* Auto-detect WooCommerce Subscription products
+* Dynamic checkout title (product name or bundle)
 * Automatic redirect to Bonzai Checkout
-* Full webhook support (payment confirmed / revoked)
-* Automatic WooCommerce order status updates
-* Dynamic checkout title using the actual WooCommerce product name
-* Secure token validation for incoming webhooks
-* Debug logs for developers
-* Compatible with all WooCommerce themes and builders
+* Generate Webhook Token with one click
+* Real-time webhook validation (granted / revoked)
+* Full Retrieve-an-Order integration:
+  - Manual order verification (admin UI)
+  - Automatic cron sync (daily or weekly)
+* Auto-update WooCommerce order status
+* Debug mode and detailed logs
+* Compatible with all WooCommerce themes, builders, and LMS platforms
 
-This plugin requires an active Bonzai Premium subscription.
+This plugin requires an active **Bonzai Premium** subscription.
 
 == Installation ==
 
 1. Upload the plugin files to `/wp-content/plugins/bonzai-gateway/`
-2. Activate the plugin through the **Plugins** screen in WordPress
-3. Navigate to **WooCommerce → Settings → Payments → Bonzai**
-4. Enter your API Token and Product UUID
-5. Configure your webhook inside the Bonzai dashboard
+2. Activate the plugin through the “Plugins” menu
+3. Go to **WooCommerce → Settings → Payments → Bonzai**
+4. Enter your **API Token** and **Product UUID**
+5. Configure the webhook URL in your Bonzai dashboard
 
 == Configuration ==
 
 === API Token ===
-Your Bonzai API token found in your Bonzai Premium Dashboard.
+Your Bonzai API token from **bonzai.pro/business**.
 
-=== Bonzai Product UUID ===
-The Bonzai product UUID that will be delivered to all WooCommerce buyers.
+=== Global Bonzai Product UUID ===
+This UUID is used to generate checkout sessions for all WooCommerce products.
+
+=== VAT Handling ===
+You can control whether prices include VAT:
+
+* Global setting for all products
+* Per-product override (include / exclude / inherit)
+
+=== Payment Mode (One-off or Subscription) ===
+Each product can define how Bonzai should charge the customer:
+
+* One-off
+* Subscription (monthly)
+* Subscription (yearly)
+* Auto-detect (if WooCommerce Subscriptions is installed)
 
 === Redirect URL ===
-After payment, customers will be redirected to this thank-you page.
+Where the customer returns after completing Bonzai Checkout.
 
 === Currency ===
-Choose whether to:
-- use WooCommerce currency, or
-- force EUR or USD (supported by Bonzai)
+Choose between:
+- WooCommerce store currency
+- Forced EUR
+- Forced USD
 
 === Minimum Amount ===
-Define a minimum cart total required to display the Bonzai payment option.
+Minimum cart total to display the payment method.
 
-=== Debug Logs ===
-Enable debug mode to view logs in:
-WooCommerce → Status → Logs → bonzai-gateway
-
-=== Webhook Token ===
-Security token used to validate webhook calls.
+=== Generate Webhook Token ===
+Click **Generate token** to instantly create a secure token.
 
 === Webhook URL ===
-Add this URL to your Bonzai Premium webhook settings:
+This URL must be added to Bonzai Premium:
+
 https://yourwebsite.com/wp-json/bonzai/v1/webhook?token=YOUR_TOKEN
+
+Paste it into **bonzai.pro/business → Webhooks**.
+
+=== Debug Logs ===
+Enable logging at:
+**WooCommerce → Status → Logs → bonzai-gateway**
 
 == Webhook Events ==
 
-The plugin handles the following Bonzai events:
+The plugin fully supports Bonzai webhook events:
 
 === product_access_granted ===
-- Marks the WooCommerce order as **completed**
-- Confirms that the customer has been granted access
+* Marks WooCommerce order as **completed**
+* Confirms access delivery
 
 === product_access_revoked ===
-- Marks the WooCommerce order as **refunded**
-- Access to the product is revoked on Bonzai’s side
+* If order was previously paid: marks as **refunded**
+* If order was never paid: status remains unchanged
+* Access is revoked on Bonzai’s side
 
 == Payment Flow ==
 
-1. Customer places an order on WooCommerce  
-2. Order is created and set to “Pending payment”  
-3. Customer is redirected to Bonzai Checkout  
-4. Customer pays using card or crypto  
-5. Bonzai sends webhook → WooCommerce updates order automatically  
-6. Customer returns to your site on the thank-you page  
+1. Customer places order on WooCommerce
+2. Order is created (pending payment)
+3. Customer is redirected to Bonzai Checkout
+4. Customer pays using card or crypto
+5. Bonzai sends webhook confirmation
+6. WooCommerce updates status automatically
+7. Customer returns to thank-you page
 
 == Dynamic Checkout Title ==
 
-The plugin automatically generates a clean title sent to Bonzai Checkout:
+The plugin generates an optimized title sent to Bonzai:
 
-- For a single product: uses the product name  
-- For multiple products: “Product A (+X more items)”  
-- If unavailable: falls back to “WooCommerce Order #123”  
+* Single product → product name
+* Multiple products → “Product A (+X more items)”
+* Fallback → “WooCommerce Order #123”
+
+== Retrieve-an-Order (Order Verification) ==
+
+Bonzai’s “Retrieve an order” API is fully integrated.
+
+=== Manual Sync (Admin Page) ===
+
+Go to:
+**WooCommerce → Bonzai Order Sync**
+
+Features:
+* Search orders by customer email
+* View all orders + Bonzai order_id
+* Click **“Sync with Bonzai”** to:
+  - Fetch order from Bonzai API
+  - Update WooCommerce order status
+  - Add detailed notes
+
+If Bonzai cannot find the order:
+A clear error message is displayed (“order not found / expired / never completed”).
+
+=== Automatic Sync (Cron) ===
+
+You can enable background sync:
+
+* Disabled
+* Daily (at chosen hour)
+* Weekly (day + hour)
+
+During automatic sync:
+- All orders with a Bonzai order_id are checked
+- Access state is compared
+- WooCommerce orders are updated accordingly
+- Logs are written if debug mode is enabled
 
 == Requirements ==
 
@@ -100,33 +162,48 @@ The plugin automatically generates a clean title sent to Bonzai Checkout:
 * WooCommerce 5.0+
 * PHP 7.4+
 * Active Bonzai Premium Subscription
-* Valid Bonzai API Token
-* Valid Bonzai Product UUID
+* Valid API Token
+* Valid Product UUID
 
 == Frequently Asked Questions ==
 
-= Can I use a different Bonzai UUID per product? =
-No. This version uses one global Bonzai product UUID for simplicity.
+= Do I need a different Bonzai UUID per product? =
+Not currently. This plugin uses one global UUID for all products.
 
-= Does Bonzai support subscriptions? =
-Currently only one-off payments are supported.
+= Are subscriptions supported? =
+Yes — monthly and yearly subscriptions, plus auto-detection of WooCommerce Subscription products.
 
 = Do I need a webhook? =
-Yes. Webhooks are required for automatic order completion.
+Yes. Webhooks are required for automatic status updates and access delivery.
+
+= Can I manually re-validate an order? =
+Yes, using the built-in admin tool:
+**WooCommerce → Bonzai Order Sync**.
 
 == Support ==
 
-For help or questions regarding Bonzai or this payment gateway, please contact:
+For assistance, contact the official Bonzai support team:
 
 📩 support@bonzai.pro
 
 == Changelog ==
+
+= 1.5.0 =
+* Added subscription support (monthly, yearly, auto-detect)
+* Added per-product VAT handling
+* Added per-product payment mode
+* Added automatic cron sync (daily/weekly) for Retrieve-an-Order
+* Added manual admin sync page
+* Improved webhook token system + Generate Token button
+* Webhook URL now updates dynamically
+* Better error reporting from Bonzai API
+* Prevents refunded status on unpaid orders
+* Enhanced logs and debugging
 
 = 1.3.1 =
 * Added English admin UI
 * Global Product UUID implementation
 * Improved webhook validation
 * Dynamic product-based checkout title
-* Enhanced error handling
+* Error handling improvements
 * Updated debug system
-
